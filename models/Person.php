@@ -3,7 +3,7 @@
 require_once 'Interest.php';
 require_once 'Database.php';
 
-class Person
+class Person implements JsonSerializable
 {
   const PERSON_TABLE = "persons";
   const PERSON_INTEREST_TABLE = "person_interest";
@@ -200,7 +200,11 @@ class Person
     $decoded = json_decode($data, true);
     $decoded["admission_date"] .= " " . $decoded["admission_time"];
     $person = new Person();
-    return $person->from_array($decoded);
+    $person->from_array($decoded);
+    if ((isset($decoded["id"])) && (!empty($decoded["id"]))){
+      $person->id = $decoded["id"];
+    }
+    return $person;
   }
 
   /**
@@ -254,6 +258,24 @@ class Person
     }
 
     return $this;
+  }
+
+  public function jsonSerialize(){
+    $interest_array = array();
+    foreach($this->interests as $interest){
+      $interest_array[] = $interest->name;
+    }
+    return array(
+      "id" => $this->id,
+      "first_name" => $this->first_name,
+      "last_name" => $this->last_name,
+      "email" => $this->email,
+      "age" => $this->age,
+      "is_active" => $this->is_active,
+      "admission_date" => $this->admission_date->format("Y-m-d"),
+      "admission_time" => $this->admission_time->format("g:iA"),
+      "interests" => $interest_array,
+    );
   }
 
 }
