@@ -3,7 +3,7 @@
 
 class RestClient{
   static $instance = null;
-  var $url = 'http://casingh.me/projects/vector_assessment/api/';
+  var $url = '../api/';
   var $ch;
   var $query_string;
   var $result_json;
